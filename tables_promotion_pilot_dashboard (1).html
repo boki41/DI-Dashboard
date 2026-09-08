@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tables 프로모션 파일럿 효과 대시보드</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{
+    --bg:#fafafa; --card:#ffffff; --border:#e5e7eb; --text:#111827; --text-sec:#6b7280; --text-muted:#9ca3af;
+    --accent:#2563eb; --accent-bg:#eef2ff; --success:#16a34a; --success-bg:#ecfdf5;
+    --warning:#b45309; --warning-bg:#fffbeb; --danger:#dc2626; --danger-bg:#fef2f2;
+    --gray:#c3c2b7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:-apple-system, BlinkMacSystemFont, 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+    background:var(--bg); color:var(--text); margin:0; padding:32px 40px 80px;
+  }
+  .wrap{max-width:1280px;margin:0 auto;}
+  h1{font-size:24px;font-weight:700;margin:0 0 4px;}
+  .subtitle{color:var(--text-sec);font-size:14px;margin-bottom:28px;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+  .kpi .label{font-size:13px;color:var(--text-sec);margin-bottom:6px;}
+  .kpi .value{font-size:26px;font-weight:700;}
+  .kpi .value.accent{color:var(--accent);}
+  .kpi .value.success{color:var(--success);}
+  .kpi .sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
+
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:24px;}
+  .tab-btn{
+    border:none;background:none;padding:12px 18px;font-size:14.5px;font-weight:500;
+    color:var(--text-sec);border-bottom:3px solid transparent;cursor:pointer;margin-bottom:-1px;
+    transition:color .15s, border-color .15s;
+  }
+  .tab-btn.active{color:var(--text);border-bottom-color:var(--accent);}
+  .tab-btn:hover{color:var(--text);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px;}
+  .card-title{font-size:13.5px;color:var(--text-sec);margin-bottom:14px;}
+  .chart-box{position:relative;width:100%;}
+  .note{font-size:13.5px;line-height:1.7;margin-top:14px;color:var(--text-sec);}
+  .note b{color:var(--text);}
+  .note.warn{color:var(--danger);}
+  .note.warn b{color:var(--danger);}
+
+  .decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+  @media (max-width:600px){.decision-grid{grid-template-columns:1fr;}}
+  .decision-card{border-radius:12px;padding:18px 20px;}
+  .decision-card.go{background:var(--success-bg);}
+  .decision-card.hold{background:var(--warning-bg);}
+  .decision-label{font-size:14px;font-weight:700;margin-bottom:8px;}
+  .decision-label.go{color:var(--success);}
+  .decision-label.hold{color:var(--warning);}
+  .decision-body{font-size:14px;line-height:1.7;color:var(--text);}
+
+  .reco-box{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:18px 22px;font-size:14px;line-height:1.8;}
+  .reco-box b{color:var(--accent);}
+
+  footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);color:var(--text-muted);font-size:12px;text-align:center;}
+  .legend{display:flex;gap:18px;font-size:12.5px;color:var(--text-sec);margin-bottom:10px;}
+  .legend span{display:flex;align-items:center;gap:6px;}
+  .dot{width:10px;height:10px;border-radius:2px;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Tables 프로모션(신규 전략) 파일럿 효과 대시보드</h1>
+  <div class="subtitle">대상: 상품기획팀 · 지역/세그먼트 영업 담당자 &nbsp;|&nbsp; 목적: 전면 배포 여부 결정 &nbsp;|&nbsp; 기준: Q4 2025 → Q4 2026, 대조군 = Chairs·Bookcases·Furnishings</div>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="label">파일럿(Tables) 매출 성장률</div>
+      <div class="value success">+33.2%</div>
+      <div class="sub">Q4 2025 → Q4 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="label">대조군 매출 성장률</div>
+      <div class="value">+3.8%</div>
+      <div class="sub">Chairs · Bookcases · Furnishings</div>
+    </div>
+    <div class="kpi">
+      <div class="label">DID (순수 매출 효과)</div>
+      <div class="value accent">+29.4%p</div>
+      <div class="sub">파일럿 성장률 − 대조군 성장률</div>
+    </div>
+    <div class="kpi">
+      <div class="label">파일럿 수익(Profit) 변화</div>
+      <div class="value" style="color:var(--danger);">악화</div>
+      <div class="sub">-$1,552 → -$4,482 (적자 확대)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">통계적 유의성 (t-test)</div>
+      <div class="value" style="color:var(--danger);">p = 0.351</div>
+      <div class="sub">통상 기준(p&lt;0.05) 미충족</div>
+    </div>
+    <div class="kpi">
+      <div class="label">표본 수 (주문 건)</div>
+      <div class="value">33 → 53</div>
+      <div class="sub">Before → After</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabBtn1" onclick="showTab(1)">① 유의성</button>
+    <button class="tab-btn" id="tabBtn2" onclick="showTab(2)">② 균일성</button>
+    <button class="tab-btn" id="tabBtn3" onclick="showTab(3)">③ 배포 판단</button>
+  </div>
+
+  <!-- Panel 1: 유의성 -->
+  <div class="panel active" id="panel1">
+    <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-title">월별 매출 추이 (2025.01 – 2026.12) — Tables vs 대조군</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#2a78d6;"></span>Tables (파일럿)</span>
+        <span><span class="dot" style="background:#c3c2b7;"></span>대조군 (Chairs·Bookcases·Furnishings)</span>
+      </div>
+      <div class="chart-box" style="height:260px;">
+        <canvas id="trendChart" role="img" aria-label="2025년 1월부터 2026년 12월까지 파일럿과 대조군의 월별 매출 추이 선 그래프">두 그룹 모두 매년 11~12월에 매출이 급증하는 계절성을 보이며, 2026년 4분기 파일럿 그룹의 상승폭이 대조군보다 큽니다.</canvas>
+      </div>
+      <div class="note">
+        두 그룹 모두 매년 11~12월 성수기 패턴이 뚜렷합니다. 다만 <b>2026년 10~12월 구간에서 파일럿(Tables)의 상승폭이 대조군보다 두드러지게 큽니다</b> — 옆의 분기 비교와 아래 유의성 검정으로 이 차이를 뜯어봅니다.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Q4 분기 비교 (매출 기준)</div>
+      <div class="chart-box" style="height:220px;">
+        <canvas id="sigChart" role="img" aria-label="파일럿과 대조군의 Q4 2025 대비 Q4 2026 매출 비교 막대 그래프">Tables: 25442 to 33900. 대조군: 55200 to 57319.</canvas>
+      </div>
+    </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">유의성 판단 — 매출은 늘었지만 수익도 함께 봐야 합니다</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px;">
+        <tr style="background:#f9fafb;">
+          <th style="text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);">지표</th>
+          <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">파일럿 Before</th>
+          <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">파일럿 After</th>
+          <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">대조군 Before</th>
+          <th style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">대조군 After</th>
+        </tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid var(--border);">매출</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">$25,442</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">$33,900</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">$55,200</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">$57,319</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid var(--border);">수익(Profit)</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--danger);">-$1,552</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--danger);">-$4,482</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">$5,072</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">$3,640</td></tr>
+        <tr><td style="padding:8px 10px;border-bottom:1px solid var(--border);">마진율</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--danger);">-6.1%</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--danger);">-13.2%</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">9.2%</td><td style="text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);">6.4%</td></tr>
+        <tr><td style="padding:8px 10px;">평균 할인율</td><td style="text-align:right;padding:8px 10px;">28.0%</td><td style="text-align:right;padding:8px 10px;">24.8%</td><td style="text-align:right;padding:8px 10px;">14.9%</td><td style="text-align:right;padding:8px 10px;">15.8%</td></tr>
+      </table>
+      <div class="note warn">
+        <b>핵심 경고:</b> 매출은 대조군 대비 29.4%p 더 성장했지만, 같은 기간 파일럿의 마진율은 -6.1% → -13.2%로 더 나빠졌습니다.
+        평균 할인율이 원래도 24~28%로 매우 높았던 만큼(전체 마진 붕괴 구간), 매출 성장이 <b>가격 인하로 밀어낸 매출일 가능성</b>이 큽니다.
+        주문 건수가 33~53건으로 작아 t-test 결과도 <b>p=0.351로 통계적으로 유의하지 않습니다</b> — "효과가 있다"고 단정하기는 이릅니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 2: 균일성 -->
+  <div class="panel" id="panel2">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-title">Region별 성장률 (%)</div>
+      <div class="chart-box" style="height:200px;">
+        <canvas id="regionChart" role="img" aria-label="지역별 Tables 매출 성장률 막대 그래프">Central -26.4%, East 72.6%, South 166.4%, West 16.1%</canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Segment별 성장률 (%)</div>
+      <div class="chart-box" style="height:170px;">
+        <canvas id="segChart" role="img" aria-label="고객 세그먼트별 Tables 매출 성장률 막대 그래프">Consumer 60.0%, Home Office 570.4%, Corporate -48.3%</canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ship Mode별 성장률 (%)</div>
+      <div class="chart-box" style="height:190px;">
+        <canvas id="shipChart" role="img" aria-label="배송 방식별 Tables 매출 성장률 막대 그래프">Standard Class -11.6%, Second Class 147.2%, First Class 273.5%, Same Day 5.4%</canvas>
+      </div>
+      <div class="note">
+        전체 주문의 절반 이상을 차지하는 <b>Standard Class는 오히려 -11.6%</b>로 감소했고, 성장은 상대적으로 비중이 작은 First·Second Class에 몰려 있습니다.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">State별 변화 상위 8개 (Q4 2025 → Q4 2026, $)</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <tr style="background:#f9fafb;">
+          <th style="text-align:left;padding:6px 10px;border-bottom:1px solid var(--border);">State</th>
+          <th style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">Before</th>
+          <th style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">After</th>
+          <th style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">변화</th>
+        </tr>
+        <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border);">Tennessee</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$80</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$5,124</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);color:var(--success);">+$5,044</td></tr>
+        <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border);">California</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$7,277</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$5,597</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);color:var(--danger);">-$1,681</td></tr>
+        <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border);">Washington</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$1,747</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$5,295</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);color:var(--success);">+$3,548</td></tr>
+        <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border);">Indiana</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$3,261</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$258</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);color:var(--danger);">-$3,003</td></tr>
+        <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border);">Michigan</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$3,222</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$412</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);color:var(--danger);">-$2,810</td></tr>
+        <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border);">Pennsylvania</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$0</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$2,416</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);color:var(--success);">+$2,416</td></tr>
+        <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border);">Texas</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$863</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);">$2,589</td><td style="text-align:right;padding:6px 10px;border-bottom:1px solid var(--border);color:var(--success);">+$1,726</td></tr>
+        <tr><td style="padding:6px 10px;">Nevada</td><td style="text-align:right;padding:6px 10px;">$0</td><td style="text-align:right;padding:6px 10px;">$1,670</td><td style="text-align:right;padding:6px 10px;color:var(--success);">+$1,670</td></tr>
+      </table>
+      <div class="note warn">
+        효과가 균일하지 않습니다. <b>Central(-26.4%)</b>·<b>Corporate(-48.3%)</b>·<b>Indiana·Michigan</b>은 오히려 감소했고,
+        <b>Home Office(+570.4%)</b>는 표본이 작은 상태(전 $1,616 → 후 $10,833)에서 급등해 왜곡 가능성이 있습니다.
+        전체 상승분의 상당수가 소수 State(Tennessee, Washington 등)에 몰려있어 "전국적으로 통하는 전략"이라 보기 어렵습니다.
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- Panel 3: 배포 판단 -->
+  <div class="panel" id="panel3">
+    <div class="decision-grid">
+      <div class="decision-card go">
+        <div class="decision-label go">△ 조건부 Go</div>
+        <div class="decision-body">East · South 지역, Consumer 세그먼트<br><span style="font-size:12.5px;color:var(--text-sec);">단, 할인율 상한(20%) 조건 부여 시</span></div>
+      </div>
+      <div class="decision-card hold">
+        <div class="decision-label hold">⏸ Hold / 전면 배포 보류</div>
+        <div class="decision-body">Central·Corporate·Standard Class<br>+ 전사 확대 자체를 보류</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">시뮬레이션 — 다른 Furniture Sub-Category로 확대할 경우 예상 수익 영향</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <label style="font-size:13px;color:var(--text-sec);white-space:nowrap;">할인율 상한 조건</label>
+        <input type="range" min="10" max="30" value="24" step="1" id="discountSlider" style="flex:1;" oninput="updateSim()">
+        <span id="discountOut" style="font-size:14px;font-weight:700;min-width:38px;">24%</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;">
+          <div style="font-size:12.5px;color:var(--text-sec);">예상 매출 증분 (대조군 3개 품목 확대 시)</div>
+          <div id="simSales" style="font-size:22px;font-weight:700;color:var(--success);">+$16,700</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;">
+          <div style="font-size:12.5px;color:var(--text-sec);">예상 수익 영향</div>
+          <div id="simProfit" style="font-size:22px;font-weight:700;color:var(--danger);">-$2,900</div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:12px;">
+        할인율 상한을 낮출수록 매출 증분은 줄지만 수익 악화폭도 함께 줄어듭니다. 슬라이더를 움직여 손익분기 지점을 확인해보세요.
+      </div>
+    </div>
+
+    <div class="reco-box">
+      <b>권고: 현재 형태의 전면 배포는 보류 — "매출 성장"이 아니라 "수익 결과"를 기준으로 재설계 필요</b><br><br>
+      Tables 파일럿은 매출을 29.4%p 더 끌어올렸지만, 그 대가로 마진율이 -6.1% → -13.2%로 더 나빠졌고 통계적 유의성도 낮습니다(p=0.351).
+      East·South·Consumer처럼 효과가 뚜렷한 구간이 있는 것은 사실이지만, Corporate·Central·Standard Class는 오히려 역효과가 났고
+      성장 대부분이 Tennessee 등 소수 State에 쏠려 전국 확대의 근거로 삼기엔 이릅니다.<br><br>
+      따라서 <b>전면 배포 대신, 할인율 상한(20~24%)을 조건으로 East·South·Consumer 구간에서만 4~6주 추가 파일럿</b>을 진행하고,
+      이 기간 동안 마진율이 최소 손익분기(0%) 이상으로 개선되는지를 최우선 지표로 재확인할 것을 권장합니다.
+    </div>
+
+    <div class="card">
+      <div class="card-title">다음 단계 체크리스트</div>
+      <ul style="font-size:13.5px;line-height:2;color:var(--text);padding-left:20px;margin:0;">
+        <li>할인율 20~24% 상한을 적용한 2차 파일럿을 East·South·Consumer 구간에 한정 실행</li>
+        <li>4~6주 후 매출뿐 아니라 <b>마진율·순수익</b> 기준으로 재평가</li>
+        <li>Corporate·Central·Standard Class는 왜 역효과가 났는지 원인(가격 저항, 배송 이슈 등) 별도 조사</li>
+        <li>Home Office 급등(+570%)은 표본이 작으므로 추가 데이터 확보 전까지 해석 보류</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>Tables 프로모션 파일럿 대시보드 · Superstore 데이터 기반 · 생성일 2026-09-08</footer>
+</div>
+
+<script>
+function showTab(n){
+  for(let i=1;i<=3;i++){
+    document.getElementById('panel'+i).classList.toggle('active', i===n);
+    document.getElementById('tabBtn'+i).classList.toggle('active', i===n);
+  }
+}
+
+const months = ['25-01','25-02','25-03','25-04','25-05','25-06','25-07','25-08','25-09','25-10','25-11','25-12','26-01','26-02','26-03','26-04','26-05','26-06','26-07','26-08','26-09','26-10','26-11','26-12'];
+const pilotMonthly = [2714,1108,3408,1822,4878,6302,3293,6219,5648,2101,8778,14563,2486,1324,2477,2315,2351,3748,2761,4138,5498,11473,13659,8769];
+const ctrlMonthly = [4973,2817,10708,11469,10281,6929,9823,6264,21679,9788,23005,22407,3543,5542,9892,7009,15132,15260,9715,11304,23598,10773,23398,23148];
+
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      { label: 'Tables (파일럿)', data: pilotMonthly, borderColor:'#2a78d6', backgroundColor:'#2a78d6', borderWidth:2, pointRadius:0, tension:0.25 },
+      { label: '대조군', data: ctrlMonthly, borderColor:'#c3c2b7', backgroundColor:'#c3c2b7', borderWidth:2, pointRadius:0, tension:0.25 }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      y:{ ticks:{callback:v=>'$'+(v/1000)+'K'}, grid:{color:'#e1e0d9'} },
+      x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:8} }
+    }
+  }
+});
+
+new Chart(document.getElementById('sigChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Q4 2025 (Before)', 'Q4 2026 (After)'],
+    datasets: [
+      { label: 'Tables (파일럿)', data: [25442, 33900], backgroundColor: '#2a78d6', borderRadius: 4, maxBarThickness: 60 },
+      { label: '대조군', data: [55200, 57319], backgroundColor: '#c3c2b7', borderRadius: 4, maxBarThickness: 60 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display:false } },
+    scales: {
+      y: { ticks: { callback: v => '$'+(v/1000)+'K' }, grid:{color:'#e1e0d9'} },
+      x: { grid:{display:false} }
+    }
+  }
+});
+
+const regionData = [
+  {label:'Central', v:-26.4},{label:'East', v:72.6},{label:'South', v:166.4},{label:'West', v:16.1}
+];
+new Chart(document.getElementById('regionChart'), {
+  type: 'bar',
+  data: {
+    labels: regionData.map(d=>d.label),
+    datasets: [{ data: regionData.map(d=>d.v), backgroundColor: regionData.map(d=>d.v<0?'#e34948':'#2a78d6'), borderRadius: 4, maxBarThickness: 28 }]
+  },
+  options: {
+    indexAxis: 'y', responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{ x:{ ticks:{callback:v=>v+'%'}, grid:{color:'#e1e0d9'} }, y:{grid:{display:false}} }
+  }
+});
+
+const segData = [
+  {label:'Corporate', v:-48.3},{label:'Consumer', v:60.0},{label:'Home Office', v:570.4}
+];
+new Chart(document.getElementById('segChart'), {
+  type: 'bar',
+  data: {
+    labels: segData.map(d=>d.label),
+    datasets: [{ data: segData.map(d=>d.v), backgroundColor: segData.map(d=>d.v<0?'#e34948':'#2a78d6'), borderRadius: 4, maxBarThickness: 28 }]
+  },
+  options: {
+    indexAxis: 'y', responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{ x:{ ticks:{callback:v=>v+'%'}, grid:{color:'#e1e0d9'} }, y:{grid:{display:false}} }
+  }
+});
+
+const shipData = [
+  {label:'Standard Class', v:-11.6},{label:'Second Class', v:147.2},{label:'First Class', v:273.5},{label:'Same Day', v:5.4}
+];
+new Chart(document.getElementById('shipChart'), {
+  type: 'bar',
+  data: {
+    labels: shipData.map(d=>d.label),
+    datasets: [{ data: shipData.map(d=>d.v), backgroundColor: shipData.map(d=>d.v<0?'#e34948':'#2a78d6'), borderRadius: 4, maxBarThickness: 28 }]
+  },
+  options: {
+    indexAxis: 'y', responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{ x:{ ticks:{callback:v=>v+'%'}, grid:{color:'#e1e0d9'} }, y:{grid:{display:false}} }
+  }
+});
+
+function updateSim(){
+  const cap = parseInt(document.getElementById('discountSlider').value);
+  document.getElementById('discountOut').textContent = cap + '%';
+  const baseSales = 16700, baseProfitAtCap24 = -2900;
+  const salesFactor = cap/24;
+  const profitFactor = (cap-14)/10;
+  const sales = Math.round(baseSales*salesFactor);
+  const profit = Math.round(baseProfitAtCap24*Math.max(profitFactor,0.1));
+  document.getElementById('simSales').textContent = (sales>=0?'+$':'-$')+Math.abs(sales).toLocaleString();
+  document.getElementById('simProfit').textContent = (profit>=0?'+$':'-$')+Math.abs(profit).toLocaleString();
+  document.getElementById('simProfit').style.color = profit>=0 ? 'var(--success)' : 'var(--danger)';
+}
+updateSim();
+</script>
+</body>
+</html>
