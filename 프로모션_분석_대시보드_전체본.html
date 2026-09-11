@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>프로모션 데이터 분석 대시보드</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f4f6;color:#20242a;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif}
+.wrap{max-width:1240px;margin:auto;padding:30px 24px 70px}
+.hero{background:#17191d;color:#fff;border-radius:22px;padding:34px 38px;margin-bottom:18px}
+.eyebrow{font-size:11px;letter-spacing:1.6px;color:#aeb3bb;font-weight:800}
+.hero h1{font-size:32px;margin:10px 0 7px}.hero p{margin:0;color:#c6cad0;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
+.kpi,.card{background:#fff;border:1px solid #e4e7ea;border-radius:17px}
+.kpi{padding:20px}.kpi .label{font-size:12px;color:#737a83;font-weight:750}.kpi .num{font-size:29px;font-weight:850;margin:7px 0}.kpi .sub{font-size:11px;color:#92979e}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 17px}.nav button{background:#fff;border:1px solid #dfe2e6;border-radius:999px;padding:9px 15px;font-weight:750;color:#616871;cursor:pointer}.nav button.active{background:#20242a;color:#fff;border-color:#20242a}
+.panel{display:none}.panel.active{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:16px}
+.card{padding:24px;margin-bottom:16px}.card h2{font-size:18px;margin:0 0 6px}.desc{font-size:12px;color:#7d838b;margin:0 0 19px}
+.insight{background:#f7f8fa;border-radius:13px;padding:15px 16px;font-size:13px;line-height:1.65;margin-top:15px}
+.hbar-row{display:grid;grid-template-columns:70px 1fr 65px;gap:12px;align-items:center;margin:17px 0;font-size:13px}.htrack,.track{height:11px;background:#eaedf0;border-radius:99px;overflow:hidden}.htrack i{display:block;height:100%;background:#25292e;border-radius:99px}
+.channel-card{border:1px solid #e6e8eb;border-radius:15px;padding:18px;margin:11px 0}.channel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.channel-title b{font-size:16px}.channel-title span{font-size:12px;font-weight:850;padding:5px 8px;border-radius:9px}.up{background:#eef8f2;color:#177245}.down{background:#fff0ef;color:#b43b34}
+.barrow{display:grid;grid-template-columns:46px 1fr 68px;gap:10px;align-items:center;margin:9px 0;font-size:12px}.barrow b{text-align:right}.track i{display:block;height:100%;border-radius:99px}.dark{background:#24282d}.light{background:#aeb4bb}
+.reward{display:grid;grid-template-columns:80px 1fr 60px;gap:11px;align-items:center;margin:18px 0;font-size:13px}.reward .track i{display:block;height:100%;background:#4d545c;border-radius:99px}
+.stat{font-size:40px;font-weight:850;margin:6px 0}.muted{font-size:12px;color:#7c838b}
+.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{padding:13px 9px;border-bottom:1px solid #edf0f2;text-align:left}.table th{font-size:11px;color:#7d838b}.table td:last-child,.table th:last-child{text-align:right}
+.item{padding:15px 0;border-bottom:1px solid #edf0f2;font-size:13px;line-height:1.65}.item:last-child{border-bottom:0}.badge{float:right;padding:5px 8px;border-radius:9px;font-size:11px;font-weight:850}.good{background:#eef8f2;color:#177245}.neutral{background:#eef1f4;color:#58606a}.warn{background:#fff6df;color:#8a6415}
+.two-col-text{columns:2;column-gap:28px}.note{font-size:11px;color:#8b9198;line-height:1.6}
+.footer{text-align:center;color:#8b9198;font-size:11px;margin-top:10px}
+@media(max-width:850px){.kpis,.grid2,.grid3{grid-template-columns:1fr 1fr}.two-col-text{columns:1}}
+@media(max-width:560px){.kpis,.grid2,.grid3{grid-template-columns:1fr}.wrap{padding:20px 13px}.hero{padding:25px}.hero h1{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+<div class="eyebrow">PROMOTION DATA ANALYSIS · PROJECT 2</div>
+<h1>프로모션 성과 분석 대시보드</h1>
+<p>Offer Type · Channel · Reward · Difficulty · 가설 검증 · 의사결정 제안</p>
+</section>
+
+<section class="kpis"><div class="kpi"><div class="label">분석 표본</div><div class="num">39,470</div><div class="sub">전체 분석 대상</div></div><div class="kpi"><div class="label">전체 완료율</div><div class="num">50.69%</div><div class="sub">열람 → 완료</div></div><div class="kpi"><div class="label">할인형 완료율</div><div class="num">60.19%</div><div class="sub">Offer Type 최고</div></div><div class="kpi"><div class="label">BOGO 완료율</div><div class="num">44.15%</div><div class="sub">할인형 대비 −16.04%p</div></div></section>
+
+<nav class="nav">
+<button class="active" data-tab="overview">전체 요약</button>
+<button data-tab="offer">Offer Type</button>
+<button data-tab="channel">채널 분석</button>
+<button data-tab="reward">Reward / Difficulty</button>
+<button data-tab="hypothesis">가설 검증</button>
+<button data-tab="decision">결론 및 제안</button>
+</nav>
+
+<section id="overview" class="panel active">
+<div class="grid2">
+<div class="card">
+<h2>전체 성과</h2><p class="desc">열람 → 완료 기준 핵심 전환 지표</p>
+<div class="stat">50.69%</div><div class="muted">전체 완료율</div>
+<div class="insight">분석 표본은 <b>39,470건</b>이며, 열람한 고객 중 약 절반이 완료 단계까지 도달했습니다. 이후 개선은 <b>Offer Type과 채널 구성</b>을 함께 보는 것이 핵심입니다.</div>
+</div>
+<div class="card">
+<h2>분석에서 가장 중요한 결과</h2><p class="desc">수치와 검증 결과를 종합한 요약</p>
+<div class="item"><b>Offer Type</b><br>할인형 완료율 60.19%로 BOGO 44.15%보다 16.04%p 높음</div>
+<div class="item"><b>Channel</b><br>Social·Mobile 포함 그룹의 열람률이 각각 43.84%p, 43.36%p 높음</div>
+<div class="item"><b>Difficulty</b><br>계수 −0.0113, p=0.020으로 완료율과 유의한 음의 관계</div>
+<div class="item"><b>Reward</b><br>Reward 2·3은 약 60%, Reward 10은 38.8%</div>
+</div>
+</div>
+<div class="card">
+<h2>분석 범위 및 데이터 메모</h2><p class="desc">원본 분석 자료 기준</p>
+<div class="two-col-text">
+<div class="item"><b>관찰 기간</b><br>약 30일</div>
+<div class="item"><b>프로필 결측</b><br>2,175건은 관련 분석에서 제외</div>
+<div class="item"><b>성별 분석</b><br>Gender O 212건 제외</div>
+<div class="item"><b>구매 연결</b><br>Offer ID와 실제 구매 데이터가 연결되지 않아 정확한 ROI/구매 uplift 계산 불가</div>
+<div class="item"><b>변수 관계</b><br>Reward·Difficulty·Offer Type이 강하게 얽혀 있어 순수 인과효과 분리가 어려움</div>
+<div class="item"><b>Email</b><br>모든 offer에 포함되어 포함/미포함 비교 불가</div>
+</div>
+</div>
+</section>
+
+<section id="offer" class="panel">
+<div class="grid2">
+<div class="card"><h2>Offer Type별 완료율</h2><p class="desc">열람한 고객 중 완료까지 이어진 비율</p><div class="hbar-row"><span>할인형</span><div class="htrack"><i style="width:60.19%"></i></div><b>60.19%</b></div><div class="hbar-row"><span>BOGO</span><div class="htrack"><i style="width:44.15%"></i></div><b>44.15%</b></div>
+<div class="insight"><b>할인형 60.19%</b>로 BOGO 44.15%보다 <b>16.04%p</b> 높습니다. 이번 데이터에서는 즉각적인 할인 혜택이 더 높은 완료율과 연결되었습니다.</div>
+</div>
+<div class="card"><h2>Offer Type 해석</h2><p class="desc">의사결정에 사용할 때의 해석</p>
+<div class="item"><b>관찰 결과</b><br>할인형의 완료율이 BOGO보다 높음</div>
+<div class="item"><b>활용</b><br>다음 캠페인에서 할인형을 우선 A/B 테스트 대상으로 설정</div>
+<div class="item"><b>주의</b><br>Offer Type 외 Reward·Difficulty 등 다른 조건도 함께 얽혀 있으므로 단순한 인과관계로 단정하지 않음</div>
+</div>
+</div>
+</section>
+
+<section id="channel" class="panel">
+<div class="card">
+<h2>채널별 열람률 비교</h2>
+<p class="desc">채널 포함 그룹과 미포함 그룹의 실제 열람률을 비교한 차트입니다.</p>
+
+    <div class="channel-card">
+      <div class="channel-title"><b>Social</b><span class="up">+43.84%p</span></div>
+      <div class="barrow"><span>포함</span><div class="track"><i class="dark" style="width:91.67%"></i></div><b>91.67%</b></div>
+      <div class="barrow"><span>미포함</span><div class="track"><i class="light" style="width:47.83%"></i></div><b>47.83%</b></div>
+    </div>
+    
+    <div class="channel-card">
+      <div class="channel-title"><b>Mobile</b><span class="up">+43.36%p</span></div>
+      <div class="barrow"><span>포함</span><div class="track"><i class="dark" style="width:78.47%"></i></div><b>78.47%</b></div>
+      <div class="barrow"><span>미포함</span><div class="track"><i class="light" style="width:35.11%"></i></div><b>35.11%</b></div>
+    </div>
+    
+    <div class="channel-card">
+      <div class="channel-title"><b>Web</b><span class="down">−11.97%p</span></div>
+      <div class="barrow"><span>포함</span><div class="track"><i class="dark" style="width:71.74%"></i></div><b>71.74%</b></div>
+      <div class="barrow"><span>미포함</span><div class="track"><i class="light" style="width:83.71%"></i></div><b>83.71%</b></div>
+    </div>
+    
+<div class="insight"><b>Social:</b> 포함 91.67% vs 미포함 47.83% → <b>+43.84%p</b><br>
+<b>Mobile:</b> 포함 78.47% vs 미포함 35.11% → <b>+43.36%p</b><br>
+<b>Web:</b> 포함 71.74% vs 미포함 83.71% → <b>−11.97%p</b></div>
+<div class="insight"><b>해석상 주의:</b> Social과 Mobile에서 큰 차이가 관찰되지만, 채널 조합과 Offer 구조가 함께 작용했을 가능성이 있습니다. 따라서 채널 자체의 순수 인과효과라기보다 <b>연관성</b>으로 해석하는 것이 적절합니다. Email은 모든 offer에 포함되어 비교가 불가능합니다.</div>
+</div>
+</section>
+
+<section id="reward" class="panel">
+<div class="grid2">
+<div class="card"><h2>Reward별 완료율</h2><p class="desc">Reward 크기별 열람 → 완료율</p><div class="reward"><span>Reward 2</span><div class="track"><i style="width:59.8%"></i></div><b>59.8%</b></div><div class="reward"><span>Reward 3</span><div class="track"><i style="width:60.1%"></i></div><b>60.1%</b></div><div class="reward"><span>Reward 5</span><div class="track"><i style="width:50.0%"></i></div><b>50.0%</b></div><div class="reward"><span>Reward 10</span><div class="track"><i style="width:38.8%"></i></div><b>38.8%</b></div>
+<div class="insight">Reward 2·3이 약 60% 수준으로 높고 Reward 10은 <b>38.8%</b>로 낮습니다. 다만 Reward와 Offer Type·Difficulty가 얽혀 있으므로 Reward만의 순수 효과로 단정할 수 없습니다.</div>
+</div>
+<div class="card"><h2>Difficulty 통계 검증</h2><p class="desc">로지스틱 회귀 결과</p>
+<div class="stat">−0.0113</div><div class="muted">logistic coefficient</div>
+<div class="insight"><b>p=0.020</b>으로 통계적으로 유의한 음의 관계가 확인되었습니다. 즉, Difficulty가 높아질수록 완료 가능성이 낮아지는 방향입니다.</div>
+</div>
+</div>
+</section>
+
+<section id="hypothesis" class="panel">
+<div class="card"><h2>가설 검증 결과</h2><p class="desc">분석 결과를 가설별로 정리</p>
+<div class="item"><span class="badge neutral">근거 부족</span><b>H1. 짧은 유효기간은 열람을 방해하는가?</b><br>단기간 만료 자체가 열람을 막는다는 근거는 확인되지 않았습니다. 고객은 대체로 하루 안에 프로모션을 확인하는 패턴을 보였습니다.</div>
+<div class="item"><span class="badge good">영향 미미</span><b>H2. 반복 노출 시 반응이 감소하는가?</b><br>반복 노출에 따른 실질적인 반응 감소는 크지 않은 것으로 나타났습니다. 반복 노출 자체를 강하게 제한할 근거는 약합니다.</div>
+<div class="item"><span class="badge good">유의</span><b>H3. Difficulty가 높을수록 완료율이 낮아지는가?</b><br>로지스틱 회귀에서 −0.0113, p=0.020으로 유의한 음의 관계가 확인되었습니다.</div>
+</div>
+</section>
+
+<section id="decision" class="panel">
+<div class="grid2">
+<div class="card"><h2>결론 및 의사결정 제안</h2><p class="desc">분석 결과를 실제 캠페인 운영에 연결</p>
+<div class="item"><b>1. 할인형 프로모션 우선 테스트</b><br>할인형 완료율이 BOGO보다 16.04%p 높으므로 다음 캠페인에서 우선 A/B 테스트 대상으로 활용합니다.</div>
+<div class="item"><b>2. Social·Mobile 채널 조합 점검</b><br>두 채널의 포함 그룹 열람률이 크게 높게 나타났으므로 발송 채널 조합과 타깃 세그먼트를 함께 검토합니다.</div>
+<div class="item"><b>3. Difficulty 완화</b><br>완료율과 음의 관계가 유의하게 나타난 만큼 조건을 단순화하거나 혜택 체감성을 높이는 실험을 설계합니다.</div>
+<div class="item"><b>4. ROI 측정을 위한 데이터 연결</b><br>향후에는 Offer ID와 구매 데이터를 연결해 실제 구매 uplift와 ROI까지 평가할 수 있도록 설계합니다.</div>
+</div>
+<div class="card"><h2>데이터 한계</h2><p class="desc">결과 해석 전에 확인해야 할 사항</p>
+<div class="item"><b>인과효과</b><br>Reward, Difficulty, Offer Type이 강하게 얽혀 있어 각 변수의 순수 효과를 분리하기 어렵습니다.</div>
+<div class="item"><b>표본 불균형</b><br>일부 채널 조건의 표본이 제한적일 수 있어 단순 비율 비교만으로 일반화하기 어렵습니다.</div>
+<div class="item"><b>구매 데이터 부재</b><br>Offer ID와 구매가 연결되지 않아 완료율 이상의 실제 매출 효과를 확인할 수 없습니다.</div>
+<div class="item"><b>프로필 결측</b><br>프로필 결측 2,175건과 Gender O 212건이 관련 분석에서 제외되었습니다.</div>
+</div>
+</div>
+</section>
+
+<div class="footer">원본 파일: project2_project_status(C2).xlsx · 분석 표본 39,470 · 관찰 기간 약 30일</div>
+</div>
+<script>
+document.querySelectorAll('.nav button').forEach(function(btn){
+ btn.addEventListener('click',function(){
+  document.querySelectorAll('.nav button').forEach(function(x){x.classList.remove('active')});
+  document.querySelectorAll('.panel').forEach(function(x){x.classList.remove('active')});
+  btn.classList.add('active');
+  document.getElementById(btn.dataset.tab).classList.add('active');
+ });
+});
+</script>
+</body></html>
